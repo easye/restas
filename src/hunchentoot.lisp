@@ -69,13 +69,20 @@
   (if *standard-special-page-p*
       (call-next-method)))
 
+(defvar *last-request-hostname* nil)
+
 (defun request-hostname-port (acceptor request)
+  (push (cons acceptor request) *last-request-hostname*)
   (let ((host (cdr (assoc :host (hunchentoot:headers-in request)))))
     (if (find #\: host)
-        (destructuring-bind (hostname port) (ppcre:split ":" host)
-          (cons hostname
-                (parse-integer port)))
-        (cons host (hunchentoot:acceptor-port acceptor)))))
+	(multiple-value-bind (result match-sequence)
+	    (ppcre:scan-to-strings "(.+):([1-9][0-9]+)" host) ;;;tcp6 localhost is "[::1]"
+	  (declare (ignore result))
+	  (let ((hostname (elt match-sequence 0))
+		(port (elt match-sequence 1)))
+	    (cons hostname
+		  (parse-integer port))))
+	(cons host (hunchentoot:acceptor-port acceptor)))))
 
 
 (defun restas-dispatch-request (acceptor request)
