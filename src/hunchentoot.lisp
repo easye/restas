@@ -69,10 +69,7 @@
   (if *standard-special-page-p*
       (call-next-method)))
 
-(defvar *last-request-hostname* nil)
-
 (defun request-hostname-port (acceptor request)
-  (push (cons acceptor request) *last-request-hostname*)
   (let ((host (cdr (assoc :host (hunchentoot:headers-in request)))))
     (if (find #\: host)
 	(multiple-value-bind (result match-sequence)
