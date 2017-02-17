@@ -11,6 +11,7 @@ on the Hunchentoot HTTP server. It was developed to simplify development of
 web applications following the REST architectural style."
     :author "Moskvitin Andrey"
     :license "LLGPL"
+    :version "2017.2.17.2"
     :depends-on (#:cffi #:hunchentoot #:bordeaux-threads
                  #:routes #:alexandria #:data-sift)
     :pathname "src"

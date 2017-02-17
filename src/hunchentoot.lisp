@@ -81,10 +81,14 @@
 		  (parse-integer port))))
 	(cons host (hunchentoot:acceptor-port acceptor)))))
 
-
-(defun restas-dispatch-request (acceptor request)
+(defun restas-dispatch-request (acceptor request
+                                &key (match-any-host-port-p t))
   (let ((vhost (find-vhost (request-hostname-port acceptor request)))
         (hunchentoot:*request* request))
+    (when (and (not vhost)
+               match-any-host-port-p
+               (= (length *vhosts*) 1))
+      (setf vhost (first *vhosts*))) ;;; HACK:  will not work with multiple vhosts
     (when (and (not vhost) *default-host-redirect*)
       (hunchentoot:redirect (hunchentoot:request-uri*)
                             :host *default-host-redirect*))
